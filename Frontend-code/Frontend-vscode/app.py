@@ -60,58 +60,54 @@ def haversine(lat1, lon1, lat2, lon2):
     distance = R * c
     return distance
 
-def find_nearby_hospitals(user_lat, user_lon):
-    if not user_lat or not user_lon:
-        return []
-    
+def find_nearby_places(user_lat, user_lon, amenity):
     overpass_url = "https://overpass-api.de/api/interpreter"
     overpass_query = f"""
     [out:json];
     (
-      node(around:20000,{user_lat},{user_lon})["amenity"="hospital"];
-      way(around:20000,{user_lat},{user_lon})["amenity"="hospital"];
-      relation(around:20000,{user_lat},{user_lon})["amenity"="hospital"];
+      node(around:20000,{user_lat},{user_lon})["amenity"="{amenity}"];
+      way(around:20000,{user_lat},{user_lon})["amenity"="{amenity}"];
+      relation(around:20000,{user_lat},{user_lon})["amenity"="{amenity}"];
     );
     out center;
     """
     try:
         response = requests.post(overpass_url, data={'data': overpass_query})
-        response.raise_for_status()  # Raise an exception for bad status codes
+        response.raise_for_status()
         data = response.json()
         
-        hospitals = []
+        places = {} # Use a dict to handle duplicates
         for element in data['elements']:
             if 'tags' in element and 'name' in element['tags']:
-                lat = element.get('lat') or element.get('center', {}).get('lat')
-                lon = element.get('lon') or element.get('center', {}).get('lon')
-                if lat and lon:
-                    distance = haversine(user_lat, user_lon, lat, lon)
-                    address_tags = element.get('tags', {})
-                    
-                    address_parts = []
-                    if address_tags.get('addr:housenumber'):
-                        address_parts.append(address_tags.get('addr:housenumber'))
-                    if address_tags.get('addr:street'):
-                        address_parts.append(address_tags.get('addr:street'))
-                    if address_tags.get('addr:city'):
-                        address_parts.append(address_tags.get('addr:city'))
-                    
-                    address = ", ".join(address_parts)
-                    if not address: # Fallback if no detailed address is found
-                        address = f"{lat:.4f}, {lon:.4f}"
-                    
-                    maps_link = f"https://www.google.com/maps/search/?api=1&query={lat},{lon}"
-                    
-                    hospitals.append({
-                        'name': element['tags']['name'], 
-                        'distance': distance,
-                        'address': address,
-                        'maps_link': maps_link
-                    })
+                name = element['tags']['name']
+                if name not in places:
+                    lat = element.get('lat') or element.get('center', {}).get('lat')
+                    lon = element.get('lon') or element.get('center', {}).get('lon')
+                    if lat and lon:
+                        distance = haversine(user_lat, user_lon, lat, lon)
+                        address_tags = element.get('tags', {})
+                        address_parts = [
+                            address_tags.get('addr:housenumber'),
+                            address_tags.get('addr:street'),
+                            address_tags.get('addr:city')
+                        ]
+                        address = ", ".join(filter(None, address_parts))
+                        if not address:
+                            address = f"{lat:.4f}, {lon:.4f}"
+                        
+                        maps_link = f"https://www.google.com/maps/search/?api=1&query={lat},{lon}"
+                        
+                        places[name] = {
+                            'name': name, 
+                            'distance': distance,
+                            'address': address,
+                            'maps_link': maps_link
+                        }
         
-        return sorted(hospitals, key=lambda x: x['distance'])[:10] # Return top 10
+        places_list = list(places.values())
+        return sorted(places_list, key=lambda x: x['distance'])[:5]
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error querying Overpass API: {e}")
+        logging.error(f"Error querying Overpass API for {amenity}: {e}")
         return []
 
 # --- Routes ---
@@ -149,7 +145,7 @@ def predict():
     classification = f"Positive ({prediction_percent:.2f}%)" if prediction >= 0.5 else f"Negative ({prediction_percent:.2f}%)"
 
     insights = []
-    hospitals = []
+    hospitals = {}
     if prediction_percent >= 20:
         insights = [
             "**Get Plenty of Rest:** Your body needs energy to fight infection.",
@@ -160,7 +156,12 @@ def predict():
         user_lat = request.form.get('latitude')
         user_lon = request.form.get('longitude')
         if user_lat and user_lon:
-            hospitals = find_nearby_hospitals(float(user_lat), float(user_lon))
+            user_lat, user_lon = float(user_lat), float(user_lon)
+            hospitals = {
+                "multi_specialty": find_nearby_places(user_lat, user_lon, "hospital"),
+                "specialized": find_nearby_places(user_lat, user_lon, "clinic"),
+                "nursing_home": find_nearby_places(user_lat, user_lon, "nursing_home"),
+            }
     else:
         insights = [
             "**Practice Good Hygiene:** Wash hands frequently.",
