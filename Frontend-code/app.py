@@ -195,6 +195,7 @@ def login():
         user = User.query.filter_by(username=request.form['username']).first()
         if user and user.check_password(request.form['password']):
             login_user(user)
+            flash('Welcome to Pneumonia Detection!', 'success')
             return redirect(url_for('index'))
         flash('Invalid username or password', 'danger')
     return render_template('login.html')
@@ -222,6 +223,10 @@ def logout():
     return redirect(url_for('login'))
 
 def init_db():
+    instance_path = os.path.join(app.root_path, 'instance')
+    if not os.path.exists(instance_path):
+        os.makedirs(instance_path)
+
     with app.app_context():
         db.create_all()
         if not User.query.filter_by(username='admin').first():

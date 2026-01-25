@@ -3,19 +3,27 @@
 # Function to clean up background processes
 cleanup() {
     echo "Killing Flask backend..."
-    kill $FLASK_PID
+    kill "$FLASK_PID"
 }
 
 # Trap the exit signal
 trap cleanup EXIT
 
-# Start the Flask backend
 echo "Starting Flask backend..."
-cd Frontend-code/Frontend-vscode
-source env/bin/activate
+
+# Check if virtual environment exists, if not, create and install dependencies
+if [ ! -d ".venv" ]; then
+    echo "Creating virtual environment..."
+    python3 -m venv .venv
+    echo "Installing dependencies..."
+    ./.venv/bin/pip install -r requirements.txt
+fi
+
+cd Frontend-code/
+source ../.venv/bin/activate
 python app.py &
 FLASK_PID=$!
-cd ../..
+cd ..
 
 echo "Waiting for Flask backend to start..."
 while ! nc -z localhost 5000; do
@@ -28,4 +36,4 @@ echo "Opening application in browser..."
 xdg-open http://127.0.0.1:5000 &
 
 # Wait for the Flask process to exit
-wait $FLASK_PID
+wait "$FLASK_PID"
