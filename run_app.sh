@@ -1,15 +1,31 @@
 #!/bin/bash
 
-# Create a virtual environment if it doesn't exist
-if [ ! -d "Frontend-code/Frontend-vscode/env" ]; then
-    python3 -m venv Frontend-code/Frontend-vscode/env
-fi
+# Function to clean up background processes
+cleanup() {
+    echo "Killing Flask backend..."
+    kill $FLASK_PID
+}
 
-# Activate the virtual environment
-source Frontend-code/Frontend-vscode/env/bin/activate
+# Trap the exit signal
+trap cleanup EXIT
 
-# Install dependencies
-pip install -r requirements.txt
+# Start the Flask backend
+echo "Starting Flask backend..."
+cd Frontend-code/Frontend-vscode
+source env/bin/activate
+python app.py &
+FLASK_PID=$!
+cd ../..
 
-# Run the application
-python Frontend-code/Frontend-vscode/app.py
+echo "Waiting for Flask backend to start..."
+while ! nc -z localhost 5000; do
+  sleep 0.1 # wait for 1/10 of a second before check again
+done
+echo "Flask backend started."
+
+# Open the browser
+echo "Opening application in browser..."
+xdg-open http://127.0.0.1:5000 &
+
+# Wait for the Flask process to exit
+wait $FLASK_PID
