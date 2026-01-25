@@ -72,6 +72,26 @@ To build a Docker image of the application and run it in a container, follow the
 *   `run_app.sh`: A shell script to automate the local setup and execution of the Flask application.
 *   `.venv/`: (New) Python virtual environment created for local development (not included in version control).
 
+## Accessing the Database
+
+The application uses an SQLite database located at `Frontend-code/instance/users.db`. You can access it using the `sqlite3` command-line tool.
+
+1.  **Navigate to the project directory:**
+    ```bash
+    cd /home/shreyas-arya/Desktop/Projects/Pneumonia_detection_using_CNN/
+    ```
+
+2.  **Open the database using sqlite3:**
+    ```bash
+    sqlite3 Frontend-code/instance/users.db
+    ```
+
+3.  **Once inside the sqlite3 prompt, you can run SQL commands:**
+    *   To list tables: `.tables`
+    *   To view schema of a table (e.g., 'user'): `.schema user`
+    *   To query data (e.g., all users): `SELECT * FROM user;`
+    *   To exit: `.quit`
+
 ## Step-by-step Workflow of the Project
 
 The application follows a straightforward workflow:
