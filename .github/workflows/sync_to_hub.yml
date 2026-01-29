@@ -25,7 +25,6 @@ jobs:
           api.upload_large_folder(
               folder_path='.',
               repo_id='shreyasarya/ML',
-              repo_type='space',
-              commit_message='Sync from GitHub'
+              repo_type='space'
           )
           "
