@@ -20,6 +20,8 @@ jobs:
         run: |
           git checkout --orphan new-main
           git add -A
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
           git commit -m "Initial commit"
           git remote add space https://shreyasarya:$HF_TOKEN@huggingface.co/spaces/shreyasarya/ML
           git push -f space new-main:main
