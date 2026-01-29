@@ -24,7 +24,7 @@ jobs:
           api = HfApi()
           api.upload_folder(
               folder_path='.',
-              repo_id='spaces/shreyasarya/ML',
+              repo_id='shreyasarya/ML',
               repo_type='space',
               token=os.environ.get('HF_TOKEN'),
               commit_message='Sync from GitHub'
