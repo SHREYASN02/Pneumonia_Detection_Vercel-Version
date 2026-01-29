@@ -139,15 +139,15 @@ def predict():
                 "**Follow Medical Advice:** Take all medications as prescribed by your doctor.",
                 "**Manage Symptoms:** Consult a doctor about over-the-counter symptom relief.",
             ]
-            user_lat = request.form.get('latitude')
-            user_lon = request.form.get('longitude')
-            if user_lat and user_lon:
-                user_lat, user_lon = float(user_lat), float(user_lon)
-                hospitals = {
-                    "multi_specialty": find_nearby_places(user_lat, user_lon, "hospital"),
-                    "specialized": find_nearby_places(user_lat, user_lon, "clinic"),
-                    "nursing_home": find_nearby_places(user_lat, user_lon, "nursing_home"),
-                }
+            # user_lat = request.form.get('latitude')
+            # user_lon = request.form.get('longitude')
+            # if user_lat and user_lon:
+            #     user_lat, user_lon = float(user_lat), float(user_lon)
+            #     hospitals = {
+            #         "multi_specialty": find_nearby_places(user_lat, user_lon, "hospital"),
+            #         "specialized": find_nearby_places(user_lat, user_lon, "clinic"),
+            #         "nursing_home": find_nearby_places(user_lat, user_lon, "nursing_home"),
+            #     }
         else:
             insights = [
                 "**Practice Good Hygiene:** Wash hands frequently.",
