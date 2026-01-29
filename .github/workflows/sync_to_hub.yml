@@ -12,9 +12,11 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
+      - name: Install huggingface-hub
+        run: pip install huggingface-hub
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          git remote add space https://shreyasarya:$HF_TOKEN@huggingface.co/spaces/shreyasarya/ML
-          git push --force space main
+          huggingface-cli login --token $HF_TOKEN
+          huggingface-cli upload spaces/shreyasarya/ML . . --repo-type=space --commit-message "Sync from GitHub"
