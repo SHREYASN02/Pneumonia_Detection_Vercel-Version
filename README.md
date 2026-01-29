@@ -1,3 +1,12 @@
+---
+title: Pneumonia Detection
+emoji: 🩺
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+---
+
 # Pneumonia Detection using CNN
 
 This project implements a web application for detecting pneumonia from chest X-ray images using a Convolutional Neural Network (CNN).
@@ -128,9 +137,7 @@ This document outlines the step-by-step updates and improvements made to the Pne
 ## 3. Major Architectural Refactoring (and Reversion)
 
 -   **Decoupled Frontend/Backend:** The application was refactored into a modern, decoupled architecture:
-    -   **Flask REST API:** The Flask backend was converted into a REST API that returns JSON responses, with CORS enabled to allow communication with a separate frontend.
-    -   **React Frontend:** A new, dynamic frontend was created using React.js, `create-react-app`, `axios` for API calls, and `antd` for a polished UI.
--   **Reversion to Server-Side Rendering:** Based on user feedback, the React frontend was removed, and the application was reverted to a server-side rendered Flask application. This demonstrated flexibility in adapting the architecture to changing requirements.
+    -   **Flask REST API:** The Flask backend was converted into a REST API that. This demonstrated flexibility in adapting the architecture to changing requirements.
 
 ## 4. Feature Enhancement: Database-Backed User Authentication
 
