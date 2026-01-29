@@ -1,0 +1,19 @@
+# Git and GitHub files
+.git/
+.github/
+.gitattributes
+
+# Python virtual environments
+**/keras/
+**/.venv/
+
+# Python cache
+**/__pycache__/
+*.pyc
+
+# Other deployment configurations
+docker-compose.yml
+run_app.sh
+.vercelignore
+vercel.json
+.hfignore
