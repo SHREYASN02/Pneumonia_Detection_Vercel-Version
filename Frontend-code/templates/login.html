@@ -117,7 +117,7 @@
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-                <form method="POST" action="/login">
+                <form method="POST" action="{{ url_for('login') }}">
                     <div class="mb-4">
                         <label for="username" class="form-label">Username</label>
                         <input type="text" class="form-control" id="username" name="username" required>
